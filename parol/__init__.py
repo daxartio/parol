@@ -3,7 +3,7 @@ import secrets
 import string
 from typing import NamedTuple
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 PASSWORD_LENGTH = 5
 PASSWORD_MIN_DIGITS_COUNT = 3

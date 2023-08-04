@@ -1,6 +1,6 @@
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.0.0"
+version = "1.0.1"
 tag_format = "$version"
 version_files = [
     "parol/__init__.py",
@@ -11,7 +11,7 @@ update_changelog_on_bump = true
 
 [tool.poetry]
 name = "parol"
-version = "1.0.0"
+version = "1.0.1"
 description = ""
 authors = ["Danil Akhtarov <daxartio@gmail.com>"]
 license = "MIT"
