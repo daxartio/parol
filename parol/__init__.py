@@ -22,6 +22,11 @@ class Password(NamedTuple):
     def __str__(self) -> str:
         return "Password(password='***')"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Password):  # pragma:no cover
+            return NotImplemented
+        return self.password == other.password and self.salt == other.salt
+
     @property
     def encoding(self) -> str:
         return ENCODING
@@ -45,6 +50,10 @@ class Password(NamedTuple):
             err = "Invalid password length"
             raise ValueError(err)
 
+        return cls(password=cls.genpassword(length), salt=cls.gensalt())
+
+    @staticmethod
+    def genpassword(length: int) -> str:
         alphabet = string.ascii_letters + string.digits
 
         while True:
@@ -58,7 +67,11 @@ class Password(NamedTuple):
             ):
                 break
 
-        return cls(password=password, salt=secrets.token_hex(SALT_NBYTES))
+        return password
+
+    @staticmethod
+    def gensalt() -> str:
+        return secrets.token_hex(SALT_NBYTES)
 
     @staticmethod
     def validate(
@@ -67,11 +80,6 @@ class Password(NamedTuple):
         hash: str,  # noqa:A002 pylint:disable=redefined-builtin
     ) -> bool:
         return Password(password=password, salt=salt).hash == hash
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Password):  # pragma:no cover
-            return NotImplemented
-        return self.password == other.password and self.salt == other.salt
 
 
 def generate(length: int = PASSWORD_LENGTH) -> Password:

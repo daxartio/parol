@@ -23,8 +23,12 @@ keywords = []
 [tool.poetry.urls]
 Changelog = "https://github.com/daxartio/parol/blob/main/CHANGELOG.md/"
 
+[tool.poetry.extras]
+bcrypt = ["bcrypt"]
+
 [tool.poetry.dependencies]
 python = "^3.8"
+bcrypt = {version = "^4.0.1", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"

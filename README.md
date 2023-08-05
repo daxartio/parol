@@ -21,6 +21,18 @@ True
 
 ```
 
+```
+pip install parol[bcrypt]
+```
+
+```python
+>>> from parol.bcrypt import Password
+>>> pwd = Password(b"123")
+>>> pwd.validate(pwd.password, pwd.hash())
+True
+
+```
+
 ## License
 
 * [MIT LICENSE](LICENSE)

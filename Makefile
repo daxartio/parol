@@ -16,7 +16,7 @@ install-poetry:  ## Install poetry
 
 .PHONY: install
 install:  ## Install dependencies
-	poetry install
+	poetry install -E bcrypt
 
 .PHONY: install-docs
 install-docs:  ## Install docs dependencies
