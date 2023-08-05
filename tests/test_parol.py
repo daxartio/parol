@@ -43,3 +43,12 @@ def test_validate(password):
 
 def test_eq():
     assert Password("123", "222") == Password("123", "222")
+
+
+def test_hash_compatibility():
+    pwd = Password(
+        "x765H",
+        "7b674cfd0b71cb81dfd9d34024ddf29d250c609ad33fb87adc644f284b214374",
+    )
+    expected = "f467b5a2a9a021e47a2a1d801ce8fdd42df058f6d5ed2abebd892174b7508645a113622abbc1ce3c636ecb4c5e844da29ceedf41d4d4f1456254be83478a6ead"  # noqa:E501
+    assert pwd.hash == expected
