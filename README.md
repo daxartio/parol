@@ -14,21 +14,9 @@ pip install parol
 ## Usage
 
 ```python
->>> import parol
->>> pwd = parol.generate()
->>> parol.validate(pwd.password, pwd.salt, pwd.hash)
-True
-
-```
-
-```
-pip install parol[bcrypt]
-```
-
-```python
->>> from parol.bcrypt import Password
->>> pwd = Password(b"123")
->>> pwd.validate(pwd.password, pwd.hash())
+>>> from parol import Password
+>>> pwd = Password.gen()
+>>> pwd.verify(pwd.hash())
 True
 
 ```

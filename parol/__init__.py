@@ -1,20 +1,14 @@
-import hashlib
 import secrets
 import string
 from typing import NamedTuple
 
-__version__ = "1.0.1"
+import bcrypt
 
-PASSWORD_LENGTH = 5
-PASSWORD_MIN_DIGITS_COUNT = 3
-ALGORITHM = "sha512"
-ENCODING = "utf-8"
-SALT_NBYTES = 32
+__version__ = "1.0.1"
 
 
 class Password(NamedTuple):
-    password: str
-    salt: str
+    password: bytes
 
     def __repr__(self) -> str:
         return str(self)
@@ -25,35 +19,24 @@ class Password(NamedTuple):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Password):  # pragma:no cover
             return NotImplemented
-        return self.password == other.password and self.salt == other.salt
+        return self.password == other.password
 
-    @property
-    def encoding(self) -> str:
-        return ENCODING
+    def hash(self, rounds: int = 12) -> bytes:  # noqa:A003
+        return bcrypt.hashpw(self.password, bcrypt.gensalt(rounds))
 
-    @property
-    def algorithm(self) -> str:
-        return ALGORITHM
-
-    @property
-    def hash(self) -> str:  # noqa:A003
-        return hashlib.pbkdf2_hmac(
-            self.algorithm,
-            self.password.encode(self.encoding),
-            self.salt.encode(self.encoding),
-            100000,
-        ).hex()
+    def verify(
+        self,
+        hash: bytes,  # noqa:A002 pylint:disable=redefined-builtin
+    ) -> bool:
+        return bcrypt.checkpw(self.password, hash)
 
     @classmethod
-    def generate(cls, length: int = PASSWORD_LENGTH) -> "Password":
-        if length < PASSWORD_LENGTH:
-            err = "Invalid password length"
-            raise ValueError(err)
-
-        return cls(password=cls.genpassword(length), salt=cls.gensalt())
-
-    @staticmethod
-    def genpassword(length: int) -> str:
+    def gen(
+        cls,
+        length: int = 5,
+        min_digits_count: int = 3,
+        encoding: str = "utf-8",
+    ) -> "Password":
         alphabet = string.ascii_letters + string.digits
 
         while True:
@@ -62,33 +45,9 @@ class Password(NamedTuple):
                 (
                     any(c.islower() for c in password),
                     any(c.isupper() for c in password),
-                    sum(c.isdigit() for c in password) >= PASSWORD_MIN_DIGITS_COUNT,
+                    sum(c.isdigit() for c in password) >= min_digits_count,
                 ),
             ):
                 break
 
-        return password
-
-    @staticmethod
-    def gensalt() -> str:
-        return secrets.token_hex(SALT_NBYTES)
-
-    @staticmethod
-    def validate(
-        password: str,
-        salt: str,
-        hash: str,  # noqa:A002 pylint:disable=redefined-builtin
-    ) -> bool:
-        return Password(password=password, salt=salt).hash == hash
-
-
-def generate(length: int = PASSWORD_LENGTH) -> Password:
-    return Password.generate(length=length)
-
-
-def validate(
-    password: str,
-    salt: str,
-    hash: str,  # noqa:A002 pylint:disable=redefined-builtin
-) -> bool:
-    return Password.validate(password, salt, hash)
+        return cls(password.encode(encoding))
